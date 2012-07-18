@@ -13,7 +13,7 @@ INCDIR	= -Iinclude -I$(srcdir)/include
 DEFS	= @DEFS@
 CPPFLAGS= @CPPFLAGS@
 CFLAGS	= @CFLAGS@
-LIBS	= @LIBS@
+LIBS	= -lcrypto @LIBS@
 LDFLAGS	= @LDFLAGS@ -L.
 COMPILE = $(CC) $(DEFS) $(INCDIR) $(CPPFLAGS) $(CFLAGS)
 CRYPTOLIB = -lcryptomodule
@@ -77,7 +77,7 @@ ciphers = cipher/cipher.o cipher/null_cipher.o      \
           cipher/aes.o cipher/aes_icm.o             \
           cipher/aes_cbc.o
 
-hashes  = hash/null_auth.o hash/sha1.o \
+hashes  = hash/null_auth.o \
           hash/hmac.o hash/auth.o
 
 math    = math/datatypes.o math/stat.o

@@ -37,7 +37,7 @@ INCDIR	= -Icrypto/include -I$(srcdir)/include -I$(srcdir)/crypto/include
 DEFS	= @DEFS@
 CPPFLAGS= @CPPFLAGS@
 CFLAGS	= @CFLAGS@
-LIBS	= @LIBS@
+LIBS	= -lcrypto @LIBS@
 LDFLAGS	= @LDFLAGS@ -L.
 COMPILE = $(CC) $(DEFS) $(INCDIR) $(CPPFLAGS) $(CFLAGS)
 SRTPLIB	= -lsrtp
@@ -78,7 +78,7 @@ ciphers = crypto/cipher/cipher.o crypto/cipher/null_cipher.o      \
           crypto/cipher/aes.o crypto/cipher/aes_icm.o             \
           crypto/cipher/aes_cbc.o
 
-hashes  = crypto/hash/null_auth.o crypto/hash/sha1.o \
+hashes  = crypto/hash/null_auth.o \
           crypto/hash/hmac.o crypto/hash/auth.o # crypto/hash/tmmhv2.o 
 
 replay  = crypto/replay/rdb.o crypto/replay/rdbx.o               \

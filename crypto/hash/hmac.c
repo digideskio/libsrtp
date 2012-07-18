@@ -42,6 +42,7 @@
  *
  */
 
+#include <openssl/sha.h>
 #include "hmac.h" 
 #include "alloc.h"
 
@@ -137,11 +138,11 @@ hmac_init(hmac_ctx_t *state, const uint8_t *key, int key_len) {
   debug_print(mod_hmac, "ipad: %s", octet_string_hex_string(ipad, 64));
   
   /* initialize sha1 context */
-  sha1_init(&state->init_ctx);
+  SHA1_Init(&state->init_ctx);
 
   /* hash ipad ^ key */
-  sha1_update(&state->init_ctx, ipad, 64);
-  memcpy(&state->ctx, &state->init_ctx, sizeof(sha1_ctx_t)); 
+  SHA1_Update(&state->init_ctx, ipad, 64);
+  memcpy(&state->ctx, &state->init_ctx, sizeof(SHA_CTX));
 
   return err_status_ok;
 }
@@ -149,7 +150,7 @@ hmac_init(hmac_ctx_t *state, const uint8_t *key, int key_len) {
 err_status_t
 hmac_start(hmac_ctx_t *state) {
     
-  memcpy(&state->ctx, &state->init_ctx, sizeof(sha1_ctx_t));
+  memcpy(&state->ctx, &state->init_ctx, sizeof(SHA_CTX));
 
   return err_status_ok;
 }
@@ -161,7 +162,7 @@ hmac_update(hmac_ctx_t *state, const uint8_t *message, int msg_octets) {
 	      octet_string_hex_string(message, msg_octets));
   
   /* hash message into sha1 context */
-  sha1_update(&state->ctx, message, msg_octets);
+  SHA1_Update(&state->ctx, message, msg_octets);
 
   return err_status_ok;
 }
@@ -169,8 +170,8 @@ hmac_update(hmac_ctx_t *state, const uint8_t *message, int msg_octets) {
 err_status_t
 hmac_compute(hmac_ctx_t *state, const void *message,
 	     int msg_octets, int tag_len, uint8_t *result) {
-  uint32_t hash_value[5];
-  uint32_t H[5];
+  unsigned char hash_value[20];
+  unsigned char H[20];
   int i;
 
   /* check tag length, return error if we can't provide the value expected */
@@ -179,7 +180,7 @@ hmac_compute(hmac_ctx_t *state, const void *message,
   
   /* hash message, copy output into H */
   hmac_update(state, (const uint8_t*)message, msg_octets);
-  sha1_final(&state->ctx, H);
+  SHA1_Final(&H, &state->ctx);
 
   /*
    * note that we don't need to debug_print() the input, since the
@@ -189,16 +190,16 @@ hmac_compute(hmac_ctx_t *state, const void *message,
 	      octet_string_hex_string((uint8_t *)H, 20));
 
   /* re-initialize hash context */
-  sha1_init(&state->ctx);
+  SHA1_Init(&state->ctx);
   
   /* hash opad ^ key  */
-  sha1_update(&state->ctx, (uint8_t *)state->opad, 64);
+  SHA1_Update(&state->ctx, (uint8_t *)state->opad, 64);
 
   /* hash the result of the inner hash */
-  sha1_update(&state->ctx, (uint8_t *)H, 20);
+  SHA1_Update(&state->ctx, (uint8_t *)H, 20);
   
   /* the result is returned in the array hash_value[] */
-  sha1_final(&state->ctx, hash_value);
+  SHA1_Final(&hash_value, &state->ctx);
 
   /* copy hash_value to *result */
   for (i=0; i < tag_len; i++)    

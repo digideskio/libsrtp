@@ -412,10 +412,6 @@
 					RelativePath=".\crypto\hash\null_auth.c"
 					>
 				</File>
-				<File
-					RelativePath=".\crypto\hash\sha1.c"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Replay"
@@ -545,10 +541,6 @@
 			</File>
 			<File
 				RelativePath=".\crypto\include\rdbx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\crypto\include\sha1.h"
 				>
 			</File>
 			<File
