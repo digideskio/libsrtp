@@ -127,7 +127,6 @@ hmac_init(HMAC_CTX *ctx, const uint8_t *key, int key_len) {
 
 err_status_t
 hmac_start(HMAC_CTX *ctx) {
-  /* Deprecated code */
   return err_status_ok;
 }
 

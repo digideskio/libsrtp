@@ -153,9 +153,6 @@ err_status_t
 aes_cbc_encrypt(aes_cbc_ctx_t *c,
 		unsigned char *data, 
 		unsigned int *bytes_in_data) {
-  int i;
-  unsigned char *input  = data;   /* pointer to data being read    */
-  unsigned char *output = data;   /* pointer to data being written */
   int bytes_to_encr = *bytes_in_data;
 
   /*
@@ -168,33 +165,9 @@ aes_cbc_encrypt(aes_cbc_ctx_t *c,
    * note that we assume that the initialization vector has already
    * been set, e.g. by calling aes_cbc_set_iv()
    */
-  debug_print(mod_aes_cbc, "iv: %s", 
-	      v128_hex_string(&c->state));
-  
-  /*
-   * loop over plaintext blocks, exoring state into plaintext then
-   * encrypting and writing to output
-   */
-  while (bytes_to_encr > 0) {
-    
-    /* exor plaintext into state */
-    for (i=0; i < 16; i++)
-      c->state.v8[i] ^= *input++;
+  debug_print(mod_aes_cbc, "iv: %s", v128_hex_string(&c->state));
 
-    debug_print(mod_aes_cbc, "inblock:  %s", 
-	      v128_hex_string(&c->state));
-
-    AES_encrypt(&c->state, &c->state, &c->expanded_key);
-
-    debug_print(mod_aes_cbc, "outblock: %s", 
-	      v128_hex_string(&c->state));
-
-    /* copy ciphertext to output */
-    for (i=0; i < 16; i++)
-      *output++ = c->state.v8[i];
-
-    bytes_to_encr -= 16;
-  }
+  AES_cbc_encrypt(data, data, bytes_to_encr, &c->expanded_key, &c->state, 1);
 
   return err_status_ok;
 }
@@ -203,12 +176,7 @@ err_status_t
 aes_cbc_decrypt(aes_cbc_ctx_t *c,
 		unsigned char *data, 
 		unsigned int *bytes_in_data) {
-  int i;
-  v128_t state, previous;
-  unsigned char *input  = data;   /* pointer to data being read    */
-  unsigned char *output = data;   /* pointer to data being written */
   int bytes_to_encr = *bytes_in_data;
-  uint8_t tmp;
 
   /*
    * verify that we're 16-octet aligned
@@ -216,47 +184,9 @@ aes_cbc_decrypt(aes_cbc_ctx_t *c,
   if (*bytes_in_data & 0x0f)
     return err_status_bad_param;    
 
-  /* set 'previous' block to iv*/
-  for (i=0; i < 16; i++) {
-    previous.v8[i] = c->previous.v8[i];
-  }
-
-  debug_print(mod_aes_cbc, "iv: %s", 
-	      v128_hex_string(&previous));
+  debug_print(mod_aes_cbc, "iv: %s", v128_hex_string(&c->previous));
   
-  /*
-   * loop over ciphertext blocks, decrypting then exoring with state
-   * then writing plaintext to output
-   */
-  while (bytes_to_encr > 0) {
-    
-    /* set state to ciphertext input block */
-    for (i=0; i < 16; i++) {
-     state.v8[i] = *input++;
-    }
-
-    debug_print(mod_aes_cbc, "inblock:  %s", 
-	      v128_hex_string(&state));
-    
-    /* decrypt state */
-    AES_decrypt(&state, &state, &c->expanded_key);
-
-    debug_print(mod_aes_cbc, "outblock: %s", 
-	      v128_hex_string(&state));
-
-    /* 
-     * exor previous ciphertext block out of plaintext, and write new
-     * plaintext block to output, while copying old ciphertext block
-     * to the 'previous' block
-     */
-    for (i=0; i < 16; i++) {
-      tmp = *output;
-      *output++ = state.v8[i] ^ previous.v8[i];
-      previous.v8[i] = tmp;
-    }
-
-    bytes_to_encr -= 16;
-  }
+  AES_cbc_encrypt(data, data, bytes_to_encr, &c->expanded_key, &c->previous, 0);
 
   return err_status_ok;
 }
@@ -522,7 +452,7 @@ cipher_test_case_t aes_cbc_test_case_3 = {
   aes_cbc_test_case_3_plaintext,         /* plaintext                */
   80,                                    /* octets in ciphertext     */
   aes_cbc_test_case_3_ciphertext,        /* ciphertext               */
-  &aes_cbc_test_case_2                    /* pointer to next testcase */
+  &aes_cbc_test_case_2                   /* pointer to next testcase */
 };
 
 cipher_type_t aes_cbc = {
