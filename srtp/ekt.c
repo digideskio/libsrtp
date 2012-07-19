@@ -150,7 +150,7 @@ ekt_stream_init_from_policy(ekt_stream_t stream_data, ekt_policy_t policy) {
 
 void
 aes_decrypt_with_raw_key(void *ciphertext, const void *key, int key_len) {
-  aes_expanded_key_t expanded_key;
+  AES_KEY expanded_key;
 
   aes_expand_decryption_key(key, key_len, &expanded_key);
   AES_decrypt(ciphertext, ciphertext, &expanded_key);
@@ -185,7 +185,7 @@ srtp_stream_init_from_ekt(srtp_stream_t stream,
   /* decrypt the Encrypted Master Key field */
   master_key = srtcp_packet_get_emk_location(srtcp_hdr, pkt_octet_len);
   /* FIX!? This decrypts the master key in-place, and never uses it */
-  /* FIX!? It's also passing to ekt_dec_key (which is an aes_expanded_key_t)
+  /* FIX!? It's also passing to ekt_dec_key (which is an AES_KEY)
    * to a function which expects a raw (unexpanded) key */
   aes_decrypt_with_raw_key((void*)master_key, &stream->ekt->data->ekt_dec_key, 16);
 

@@ -17,7 +17,7 @@
 typedef struct {
   v128_t   state;                  /* cipher chaining state            */
   v128_t   previous;               /* previous ciphertext block        */
-  aes_expanded_key_t expanded_key; /* the cipher key                   */
+  AES_KEY expanded_key;            /* the cipher key                   */
 } aes_cbc_ctx_t;
 
 err_status_t

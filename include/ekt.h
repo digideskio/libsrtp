@@ -103,8 +103,8 @@ typedef struct ekt_policy_ctx_t {
 typedef struct ekt_data_t {
   ekt_spi_t spi;
   uint8_t ekt_cipher_type;
-  aes_expanded_key_t ekt_enc_key;
-  aes_expanded_key_t ekt_dec_key;
+  AES_KEY ekt_enc_key;
+  AES_KEY ekt_dec_key;
   struct ekt_data_t *next_ekt_data;
 } ekt_data_t;
 

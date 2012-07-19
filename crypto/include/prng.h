@@ -10,6 +10,8 @@
 #ifndef PRNG_H
 #define PRNG_H
 
+#include <openssl/aes.h>
+
 #include "rand_source.h"  /* for rand_source_func_t definition       */
 #include "aes.h"          /* for aes                                 */
 #include "aes_icm.h"      /* for aes ctr                             */
@@ -22,7 +24,7 @@
 
 typedef struct {
   v128_t   state;          /* state data                              */
-  aes_expanded_key_t key;  /* secret key                              */
+  AES_KEY key;             /* secret key                              */
   uint32_t octet_count;    /* number of octets output since last init */
   rand_source_func_t rand; /* random source for re-initialization     */
 } x917_prng_t;

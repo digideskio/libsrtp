@@ -46,6 +46,8 @@
 #ifndef _AES_H
 #define _AES_H
 
+#include <openssl/aes.h>
+
 #include "config.h"
 
 #include "datatypes.h"
@@ -54,20 +56,15 @@
 
 /* aes internals */
 
-typedef struct {
-  v128_t round[15];
-  int num_rounds;
-} aes_expanded_key_t;
-
 err_status_t
 aes_expand_encryption_key(const uint8_t *key,
 			  int key_len,
-			  aes_expanded_key_t *expanded_key);
+			  AES_KEY *expanded_key);
 
 err_status_t
 aes_expand_decryption_key(const uint8_t *key,
 			  int key_len,
-			  aes_expanded_key_t *expanded_key);
+			  AES_KEY *expanded_key);
 
 #if 0
 /*

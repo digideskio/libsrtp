@@ -55,7 +55,7 @@ extern debug_module_t mod_aes_icm;
 err_status_t
 aes_expand_encryption_key(const uint8_t *key, 
 			  int key_len,
-			  aes_expanded_key_t *expanded_key) {
+			  AES_KEY *expanded_key) {
   if (key_len == 16) {
     AES_set_encrypt_key(key, 128, expanded_key);
     return err_status_ok;
@@ -75,7 +75,7 @@ aes_expand_encryption_key(const uint8_t *key,
 err_status_t
 aes_expand_decryption_key(const uint8_t *key, 
 			  int key_len,
-			  aes_expanded_key_t *expanded_key) {
+			  AES_KEY *expanded_key) {
   AES_set_decrypt_key(key, key_len * 8, expanded_key);
   return err_status_ok;
 }

@@ -36,7 +36,7 @@ int
 main (int argc, char *argv[]) {
   v128_t data;
   uint8_t key[AES_MAX_KEY_LEN];
-  aes_expanded_key_t exp_key;
+  AES_KEY exp_key;
   int key_len, len;
   int verbose;
   err_status_t status;
