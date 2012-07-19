@@ -142,9 +142,6 @@
 			<Filter
 				Name="Ciphers">
 				<File
-					RelativePath=".\crypto\cipher\aes.c">
-				</File>
-				<File
 					RelativePath=".\crypto\cipher\aes_cbc.c">
 				</File>
 				<File

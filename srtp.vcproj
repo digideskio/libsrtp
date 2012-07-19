@@ -367,20 +367,6 @@
 				Name="Ciphers"
 				>
 				<File
-					RelativePath=".\crypto\cipher\aes.c"
-					>
-					<FileConfiguration
-						Name="Debug Dll|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							InlineFunctionExpansion="0"
-							EnableIntrinsicFunctions="false"
-							EnableFunctionLevelLinking="false"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\crypto\cipher\aes_cbc.c"
 					>
 				</File>
