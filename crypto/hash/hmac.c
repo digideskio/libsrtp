@@ -42,7 +42,9 @@
  *
  */
 
+#include <openssl/hmac.h>
 #include <openssl/sha.h>
+
 #include "hmac.h" 
 #include "alloc.h"
 
@@ -64,17 +66,17 @@ hmac_alloc(auth_t **a, int key_len, int out_len) {
 
   /*
    * check key length - note that we don't support keys larger
-   * than 20 bytes yet
+   * than SHA_DIGEST_LENGTH bytes yet
    */
-  if (key_len > 20)
+  if (key_len > SHA_DIGEST_LENGTH)
     return err_status_bad_param;
 
-  /* check output length - should be less than 20 bytes */
-  if (out_len > 20)
+  /* check output length - should be less than SHA_DIGEST_LENGTH bytes */
+  if (out_len > SHA_DIGEST_LENGTH)
     return err_status_bad_param;
 
-  /* allocate memory for auth and hmac_ctx_t structures */
-  pointer = (uint8_t*)crypto_alloc(sizeof(hmac_ctx_t) + sizeof(auth_t));
+  /* allocate memory for auth and HMAC_CTX structures */
+  pointer = (uint8_t*)crypto_alloc(sizeof(HMAC_CTX) + sizeof(auth_t));
   if (pointer == NULL)
     return err_status_alloc_fail;
 
@@ -98,7 +100,7 @@ hmac_dealloc(auth_t *a) {
   
   /* zeroize entire state*/
   octet_string_set_to_zero((uint8_t *)a, 
-			   sizeof(hmac_ctx_t) + sizeof(auth_t));
+			   sizeof(HMAC_CTX) + sizeof(auth_t));
 
   /* free memory */
   crypto_free(a);
@@ -110,103 +112,55 @@ hmac_dealloc(auth_t *a) {
 }
 
 err_status_t
-hmac_init(hmac_ctx_t *state, const uint8_t *key, int key_len) {
-  int i;
-  uint8_t ipad[64]; 
-  
-    /*
-   * check key length - note that we don't support keys larger
-   * than 20 bytes yet
-   */
-  if (key_len > 20)              
-    return err_status_bad_param;
-  
+hmac_init(HMAC_CTX *ctx, const uint8_t *key, int key_len) {
   /*
-   * set values of ipad and opad by exoring the key into the
-   * appropriate constant values
+   * check key length - note that we don't support keys larger
+   * than SHA_DIGEST_LENGTH bytes yet
    */
-  for (i=0; i < key_len; i++) {    
-    ipad[i] = key[i] ^ 0x36;
-    state->opad[i] = key[i] ^ 0x5c;
-  }  
-  /* set the rest of ipad, opad to constant values */
-  for (   ; i < 64; i++) {    
-    ipad[i] = 0x36;
-    ((uint8_t *)state->opad)[i] = 0x5c;
-  }  
+  if (key_len > SHA_DIGEST_LENGTH)
+    return err_status_bad_param;
 
-  debug_print(mod_hmac, "ipad: %s", octet_string_hex_string(ipad, 64));
-  
-  /* initialize sha1 context */
-  SHA1_Init(&state->init_ctx);
-
-  /* hash ipad ^ key */
-  SHA1_Update(&state->init_ctx, ipad, 64);
-  memcpy(&state->ctx, &state->init_ctx, sizeof(SHA_CTX));
+  HMAC_Init(ctx, key, key_len, EVP_sha1());
 
   return err_status_ok;
 }
 
 err_status_t
-hmac_start(hmac_ctx_t *state) {
-    
-  memcpy(&state->ctx, &state->init_ctx, sizeof(SHA_CTX));
-
+hmac_start(HMAC_CTX *ctx) {
+  /* Deprecated code */
   return err_status_ok;
 }
 
 err_status_t
-hmac_update(hmac_ctx_t *state, const uint8_t *message, int msg_octets) {
+hmac_update(HMAC_CTX *ctx, const uint8_t *message, int msg_octets) {
 
   debug_print(mod_hmac, "input: %s", 
 	      octet_string_hex_string(message, msg_octets));
   
-  /* hash message into sha1 context */
-  SHA1_Update(&state->ctx, message, msg_octets);
+  HMAC_Update(ctx, message, msg_octets);
 
   return err_status_ok;
 }
 
 err_status_t
-hmac_compute(hmac_ctx_t *state, const void *message,
+hmac_compute(HMAC_CTX *ctx, const void *message,
 	     int msg_octets, int tag_len, uint8_t *result) {
-  unsigned char hash_value[20];
-  unsigned char H[20];
+  unsigned char hash_value[SHA_DIGEST_LENGTH];
   int i;
 
   /* check tag length, return error if we can't provide the value expected */
-  if (tag_len > 20)
+  if (tag_len > SHA_DIGEST_LENGTH)
     return err_status_bad_param;
   
-  /* hash message, copy output into H */
-  hmac_update(state, (const uint8_t*)message, msg_octets);
-  SHA1_Final(&H, &state->ctx);
+  /* hash message, copy output into hash_value */
+  HMAC_Update(ctx, message, msg_octets);
+  HMAC_Final(ctx, &hash_value, NULL);
 
-  /*
-   * note that we don't need to debug_print() the input, since the
-   * function hmac_update() already did that for us
-   */
-  debug_print(mod_hmac, "intermediate state: %s", 
-	      octet_string_hex_string((uint8_t *)H, 20));
-
-  /* re-initialize hash context */
-  SHA1_Init(&state->ctx);
-  
-  /* hash opad ^ key  */
-  SHA1_Update(&state->ctx, (uint8_t *)state->opad, 64);
-
-  /* hash the result of the inner hash */
-  SHA1_Update(&state->ctx, (uint8_t *)H, 20);
-  
-  /* the result is returned in the array hash_value[] */
-  SHA1_Final(&hash_value, &state->ctx);
+  debug_print(mod_hmac, "output: %s",
+	      octet_string_hex_string((uint8_t *)hash_value, tag_len));
 
   /* copy hash_value to *result */
-  for (i=0; i < tag_len; i++)    
-    result[i] = ((uint8_t *)hash_value)[i];
-
-  debug_print(mod_hmac, "output: %s", 
-	      octet_string_hex_string((uint8_t *)hash_value, tag_len));
+  memcpy(result, &hash_value, tag_len);
 
   return err_status_ok;
 }
@@ -266,4 +220,3 @@ hmac  = {
   (debug_module_t *)    &mod_hmac,
   (auth_type_id_t)       HMAC_SHA1
 };
-

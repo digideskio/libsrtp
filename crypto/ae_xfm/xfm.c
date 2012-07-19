@@ -28,7 +28,7 @@ aes_128_cbc_hmac_sha1_96_func(void *key,
 			      unsigned *opaque_len, 
 			      void *auth_tag) {
   aes_cbc_ctx_t aes_ctx;
-  hmac_ctx_t hmac_ctx;
+  HMAC_CTX hmac_ctx;
   unsigned char enc_key[ENC_KEY_LEN];
   unsigned char mac_key[MAC_KEY_LEN];
   err_status_t status;
@@ -79,9 +79,6 @@ aes_128_cbc_hmac_sha1_96_func(void *key,
     status = hmac_init(&hmac_ctx, mac_key, MAC_KEY_LEN);
     if (status) return status;
 
-    status = hmac_start(&hmac_ctx);
-    if (status) return status;
-
     status = hmac_update(&hmac_ctx, clear, clear_len);
     if (status) return status;
 
@@ -102,7 +99,7 @@ aes_128_cbc_hmac_sha1_96_inv(void *key,
 			     unsigned *opaque_len, 
 			     void *auth_tag) {
   aes_cbc_ctx_t aes_ctx;
-  hmac_ctx_t hmac_ctx;
+  HMAC_CTX hmac_ctx;
   unsigned char enc_key[ENC_KEY_LEN];
   unsigned char mac_key[MAC_KEY_LEN];
   unsigned char tmp_tag[TAG_LEN];
@@ -155,9 +152,6 @@ aes_128_cbc_hmac_sha1_96_inv(void *key,
     status = hmac_init(&hmac_ctx, mac_key, MAC_KEY_LEN);
     if (status) return status;
 
-    status = hmac_start(&hmac_ctx);
-    if (status) return status;
-
     status = hmac_update(&hmac_ctx, clear, clear_len);
     if (status) return status;
 
@@ -187,7 +181,7 @@ aes_128_cbc_hmac_sha1_96_enc(void *key,
 			     void *opaque,         
 			     unsigned *opaque_len) {
   aes_cbc_ctx_t aes_ctx;
-  hmac_ctx_t hmac_ctx;
+  HMAC_CTX hmac_ctx;
   unsigned char enc_key[ENC_KEY_LEN];
   unsigned char mac_key[MAC_KEY_LEN];
   unsigned char *auth_tag;
@@ -261,9 +255,6 @@ aes_128_cbc_hmac_sha1_96_enc(void *key,
     status = hmac_init(&hmac_ctx, mac_key, MAC_KEY_LEN);
     if (status) return status;
 
-    status = hmac_start(&hmac_ctx);
-    if (status) return status;
-
     status = hmac_update(&hmac_ctx, clear, clear_len);
     if (status) return status;
 #if DEBUG
@@ -298,7 +289,7 @@ aes_128_cbc_hmac_sha1_96_dec(void *key,
 			     void *opaque,         
 			     unsigned *opaque_len) {
   aes_cbc_ctx_t aes_ctx;
-  hmac_ctx_t hmac_ctx;
+  HMAC_CTX hmac_ctx;
   unsigned char enc_key[ENC_KEY_LEN];
   unsigned char mac_key[MAC_KEY_LEN];
   unsigned char tmp_tag[TAG_LEN];
@@ -357,9 +348,6 @@ aes_128_cbc_hmac_sha1_96_dec(void *key,
      * and write it to a temporary location
      */
     status = hmac_init(&hmac_ctx, mac_key, MAC_KEY_LEN);
-    if (status) return status;
-
-    status = hmac_start(&hmac_ctx);
     if (status) return status;
 
     status = hmac_update(&hmac_ctx, clear, clear_len);
