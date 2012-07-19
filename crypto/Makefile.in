@@ -42,8 +42,8 @@ dummy : all runtest
 # test applications 
 
 testapp = test/cipher_driver$(EXE) test/datatypes_driver$(EXE) \
-	  test/stat_driver$(EXE) test/sha1_driver$(EXE) \
-	  test/kernel_driver$(EXE) test/aes_calc$(EXE) test/rand_gen$(EXE) \
+	  test/stat_driver$(EXE) test/kernel_driver$(EXE) \
+	  test/aes_calc$(EXE) test/rand_gen$(EXE) \
 	  test/env$(EXE)
 
 # data values used to test the aes_calc application for AES-128
@@ -66,7 +66,6 @@ runtest: libcryptomodule.a $(testapp)
 	test/cipher_driver$(EXE) -v >/dev/null
 	test/datatypes_driver$(EXE) -v >/dev/null
 	test/stat_driver$(EXE) >/dev/null
-	test/sha1_driver$(EXE) -v >/dev/null
 	test/kernel_driver$(EXE) -v >/dev/null
 	test/rand_gen$(EXE) -n 256 >/dev/null
 	@echo "libcryptomodule test applications passed."

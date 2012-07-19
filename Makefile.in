@@ -119,8 +119,7 @@ libcryptomath.a: $(cryptomath)
 
 crypto_testapp = crypto/test/aes_calc$(EXE) crypto/test/cipher_driver$(EXE) \
 	crypto/test/datatypes_driver$(EXE) crypto/test/kernel_driver$(EXE) \
-	crypto/test/rand_gen$(EXE) crypto/test/sha1_driver$(EXE) \
-	crypto/test/stat_driver$(EXE)
+	crypto/test/rand_gen$(EXE) crypto/test/stat_driver$(EXE)
 
 testapp = $(crypto_testapp) test/srtp_driver$(EXE) test/replay_driver$(EXE) \
 	  test/roc_driver$(EXE) test/rdbx_driver$(EXE) test/rtpw$(EXE) \
