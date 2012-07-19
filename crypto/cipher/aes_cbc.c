@@ -167,7 +167,7 @@ aes_cbc_encrypt(aes_cbc_ctx_t *c,
    */
   debug_print(mod_aes_cbc, "iv: %s", v128_hex_string(&c->state));
 
-  AES_cbc_encrypt(data, data, bytes_to_encr, &c->expanded_key, &c->state, 1);
+  AES_cbc_encrypt(data, data, bytes_to_encr, &c->expanded_key, &c->state, AES_ENCRYPT);
 
   return err_status_ok;
 }
@@ -186,7 +186,7 @@ aes_cbc_decrypt(aes_cbc_ctx_t *c,
 
   debug_print(mod_aes_cbc, "iv: %s", v128_hex_string(&c->previous));
   
-  AES_cbc_encrypt(data, data, bytes_to_encr, &c->expanded_key, &c->previous, 0);
+  AES_cbc_encrypt(data, data, bytes_to_encr, &c->expanded_key, &c->previous, AES_DECRYPT);
 
   return err_status_ok;
 }
