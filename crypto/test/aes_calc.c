@@ -100,7 +100,7 @@ main (int argc, char *argv[]) {
   }
 
   /* encrypt plaintext */
-  status = aes_expand_encryption_key(key, key_len, &exp_key);
+  status = AES_set_encrypt_key(&key, key_len * 8, &exp_key);
   if (status) {
     fprintf(stderr,
 	    "error: AES key expansion failed.\n");

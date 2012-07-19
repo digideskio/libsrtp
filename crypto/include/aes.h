@@ -54,18 +54,6 @@
 #include "gf2_8.h"
 #include "err.h"
 
-/* aes internals */
-
-err_status_t
-aes_expand_encryption_key(const uint8_t *key,
-			  int key_len,
-			  AES_KEY *expanded_key);
-
-err_status_t
-aes_expand_decryption_key(const uint8_t *key,
-			  int key_len,
-			  AES_KEY *expanded_key);
-
 #if 0
 /*
  * internal functions 

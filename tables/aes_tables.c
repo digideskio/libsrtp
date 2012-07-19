@@ -42,6 +42,8 @@
  *
  */
 
+#include <openssl/aes.h>
+
 #include <stdio.h>
 #include "gf2_8.h"
 #include "crypto_math.h"
@@ -54,7 +56,7 @@ unsigned char aes_inv_sbox[256];
 uint32_t T0[256], T1[256], T2[256], T3[256], T4[256]; 
 
 
-#define AES_INVERSE_TEST 0  /* set to 1 to test forward/backwards aes */
+#define AES_INVERSE_TEST 1  /* set to 1 to test forward/backwards aes */
 
 /* functions for precomputing AES values */
 
@@ -329,10 +331,10 @@ aes_test_inverse(void) {
   
   v128_copy_octet_string(&k, key);
   v128_copy_octet_string(&x, plaintext);
-  aes_expand_encryption_key(k, expanded_key);
-  aes_expand_decryption_key(k, decrypt_key);
-  AES_encrypt(&x, expanded_key);
-  AES_decrypt(&x, decrypt_key);
+  AES_set_encrypt_key(&k, 128, &expanded_key);
+  AES_set_decrypt_key(&k, 128, &decrypt_key);
+  AES_encrypt(&x, &x, &expanded_key);
+  AES_decrypt(&x, &x, &decrypt_key);
   
   /* compare to expected value then report */
   v128_copy_octet_string(&y, plaintext);

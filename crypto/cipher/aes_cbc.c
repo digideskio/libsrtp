@@ -116,12 +116,12 @@ aes_cbc_context_init(aes_cbc_ctx_t *c, const uint8_t *key, int key_len,
   /* expand key for the appropriate direction */
   switch (dir) {
   case (direction_encrypt):
-    status = aes_expand_encryption_key(key, key_len, &c->expanded_key);
+    status = AES_set_encrypt_key(key, key_len * 8, &c->expanded_key);
     if (status)
       return status;
     break;
   case (direction_decrypt):
-    status = aes_expand_decryption_key(key, key_len, &c->expanded_key);
+    status = AES_set_decrypt_key(key, key_len * 8, &c->expanded_key);
     if (status)
       return status;
     break;

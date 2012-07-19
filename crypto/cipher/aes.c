@@ -51,31 +51,3 @@
 
 
 extern debug_module_t mod_aes_icm;
-
-err_status_t
-aes_expand_encryption_key(const uint8_t *key, 
-			  int key_len,
-			  AES_KEY *expanded_key) {
-  if (key_len == 16) {
-    AES_set_encrypt_key(key, 128, expanded_key);
-    return err_status_ok;
-  }
-  else if (key_len == 24) {
-    /* AES-192 not yet supported */
-    return err_status_bad_param;
-  }
-  else if (key_len == 32) {
-    AES_set_encrypt_key(key, 256, expanded_key);
-    return err_status_ok;
-  }
-  else
-    return err_status_bad_param;
-}
-
-err_status_t
-aes_expand_decryption_key(const uint8_t *key, 
-			  int key_len,
-			  AES_KEY *expanded_key) {
-  AES_set_decrypt_key(key, key_len * 8, expanded_key);
-  return err_status_ok;
-}

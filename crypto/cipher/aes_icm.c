@@ -191,7 +191,7 @@ aes_icm_context_init(aes_icm_ctx_t *c, const uint8_t *key, int key_len) {
 	      "offset: %s", v128_hex_string(&c->offset)); 
 
   /* expand key */
-  status = aes_expand_encryption_key(key, base_key_len, &c->expanded_key);
+  status = AES_set_encrypt_key(key, base_key_len * 8, &c->expanded_key);
   if (status) {
     v128_set_to_zero(&c->counter);
     v128_set_to_zero(&c->offset);

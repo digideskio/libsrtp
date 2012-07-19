@@ -152,7 +152,7 @@ void
 aes_decrypt_with_raw_key(void *ciphertext, const void *key, int key_len) {
   AES_KEY expanded_key;
 
-  aes_expand_decryption_key(key, key_len, &expanded_key);
+  AES_set_decrypt_key(key, key_len * 8, &expanded_key);
   AES_decrypt(ciphertext, ciphertext, &expanded_key);
 }
 
