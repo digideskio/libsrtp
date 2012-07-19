@@ -331,8 +331,8 @@ aes_test_inverse(void) {
   v128_copy_octet_string(&x, plaintext);
   aes_expand_encryption_key(k, expanded_key);
   aes_expand_decryption_key(k, decrypt_key);
-  aes_encrypt(&x, expanded_key);
-  aes_decrypt(&x, decrypt_key);
+  AES_encrypt(&x, expanded_key);
+  AES_decrypt(&x, decrypt_key);
   
   /* compare to expected value then report */
   v128_copy_octet_string(&y, plaintext);

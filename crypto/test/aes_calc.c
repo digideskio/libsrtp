@@ -18,6 +18,8 @@
 
  */
 
+#include <openssl/aes.h>
+
 #include "aes.h"
 #include <stdio.h>
 #include <string.h>
@@ -105,7 +107,7 @@ main (int argc, char *argv[]) {
     exit(1);
   }
 
-  aes_encrypt(&data, &exp_key);
+  AES_encrypt(&data, &data, &exp_key);
 
   /* write ciphertext to output */
   if (verbose) {

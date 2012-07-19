@@ -44,6 +44,8 @@
  */
 
 
+#include <openssl/aes.h>
+
 #include "aes_cbc.h"
 #include "alloc.h"
 
@@ -182,7 +184,7 @@ aes_cbc_encrypt(aes_cbc_ctx_t *c,
     debug_print(mod_aes_cbc, "inblock:  %s", 
 	      v128_hex_string(&c->state));
 
-    aes_encrypt(&c->state, &c->expanded_key);
+    AES_encrypt(&c->state, &c->state, &c->expanded_key);
 
     debug_print(mod_aes_cbc, "outblock: %s", 
 	      v128_hex_string(&c->state));
@@ -237,7 +239,7 @@ aes_cbc_decrypt(aes_cbc_ctx_t *c,
 	      v128_hex_string(&state));
     
     /* decrypt state */
-    aes_decrypt(&state, &c->expanded_key);
+    AES_decrypt(&state, &state, &c->expanded_key);
 
     debug_print(mod_aes_cbc, "outblock: %s", 
 	      v128_hex_string(&state));
