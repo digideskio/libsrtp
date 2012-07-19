@@ -46,8 +46,6 @@
 #ifndef _AES_H
 #define _AES_H
 
-#include <openssl/aes.h>
-
 #include "config.h"
 
 #include "datatypes.h"

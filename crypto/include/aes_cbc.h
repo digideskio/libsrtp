@@ -11,6 +11,8 @@
 #ifndef AES_CBC_H
 #define AES_CBC_H
 
+#include <openssl/aes.h>
+
 #include "aes.h"
 #include "cipher.h"
 

@@ -11,6 +11,8 @@
 #ifndef AES_ICM_H
 #define AES_ICM_H
 
+#include <openssl/aes.h>
+
 #include "aes.h"
 #include "cipher.h"
 
